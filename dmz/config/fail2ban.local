@@ -1,0 +1,15 @@
+[DEFAULT]
+chain = INPUT
+
+[sshd]
+enabled = true
+port    = 2222
+#logpath = %(sshd_log)s
+logpath = /var/log/*auth.log
+# El entorno 'systemd' funciona, pero el logpath deja de funcionar
+# Se resuelve usando el entorno 'polling' (las horas que me ha supuesto descubrirlo)
+backend = polling
+maxretry = 3
+bantime = 600
+filter = sshd
+findtime = 1m

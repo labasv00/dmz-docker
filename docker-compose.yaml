@@ -1,0 +1,96 @@
+version: '3.7'
+services:
+  fw:
+    image: bin/fw
+    build: ./fw
+    container_name: fw
+    networks:
+      extranet:
+        ipv4_address: 10.5.0.1
+      DMZ:
+        ipv4_address: 10.5.1.1
+      intranet:
+        ipv4_address: 10.5.2.1
+    privileged: true
+    tty: true
+    
+  extranet:
+    build: ./extranet
+    image: bin/extranet
+    container_name: ext1
+    networks:
+      extranet:
+        ipv4_address: 10.5.0.20
+    depends_on:
+      - fw
+    privileged: true
+    tty: true
+    
+  intranet1:
+    image: bin/intranet
+    build: ./intranet
+    container_name: int1
+    networks:
+      intranet:
+        ipv4_address: 10.5.2.20
+    depends_on:
+      - fw
+    privileged: true
+    tty: true
+
+  intranet2:
+    image: bin/intranet
+    build: ./intranet
+    container_name: int2
+    networks:
+      intranet:
+        ipv4_address: 10.5.2.21
+    depends_on:
+      - fw
+    privileged: true
+    tty: true
+
+  intranet3:
+    image: bin/intranetvpn
+    build: ./intranetvpn
+    container_name: int3
+    networks:
+      intranet:
+        ipv4_address: 10.5.2.22
+    depends_on:
+      - fw
+    privileged: true
+    tty: true
+    
+  dmz:
+    image: bin/dmz
+    build: ./dmz
+    container_name: dmz
+    networks:
+      DMZ:
+        ipv4_address: 10.5.1.20
+    depends_on:
+      - fw
+    privileged: true
+    tty: true
+
+networks:
+  extranet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24
+          gateway: 10.5.0.254
+  DMZ:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.1.0/24
+          gateway: 10.5.1.254
+  intranet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.2.0/24
+          gateway: 10.5.2.254
+
